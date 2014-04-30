@@ -1,0 +1,5 @@
+# Exclude the vendor directory created by Composer.
+vendor
+
+# Exclude test data because it contains login credentials.
+test_data.php

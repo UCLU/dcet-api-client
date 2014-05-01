@@ -15,9 +15,9 @@ class TicketClient implements ClientInterface {
   protected $drupal;
 
   /**
-   * @param DrupalClientInterface $drupal_client
+   * @param DrupalServicesClientInterface $drupal_client
    */
-  public function __construct(DrupalClientInterface $drupal_client) {
+  public function __construct(DrupalServicesClientInterface $drupal_client) {
     $this->drupal = $drupal_client;
   }
 

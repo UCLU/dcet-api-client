@@ -10,7 +10,7 @@ use DCET\Exception\RequestException;
 use DCET\Exception\ResponseException;
 use GuzzleHttp\Client as GuzzleClient;
 
-class DrupalClient implements DrupalClientInterface {
+class DrupalServicesClient implements DrupalServicesClientInterface {
 
   protected $csrf_token;
   protected $http;

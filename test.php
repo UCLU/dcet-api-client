@@ -10,8 +10,8 @@ require 'vendor/autoload.php';
 // Include test variables.
 require 'test_data.php';
 
-// Initialise a Drupal API client.
-$drupal = new DCET\DrupalClient($test_url);
+// Initialise a Drupal Services API client.
+$drupal = new DCET\DrupalServicesClient($test_url);
 
 // Log in. This uses Drupal's standard cookie-based authentication.
 $drupal->login($test_username, $test_password);

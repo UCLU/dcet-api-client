@@ -6,7 +6,7 @@
 
 namespace DCET;
 
-interface DrupalClientInterface extends ClientInterface {
+interface DrupalServicesClientInterface extends ClientInterface {
 
   /**
    * Log in to Drupal.

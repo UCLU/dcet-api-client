@@ -10,14 +10,24 @@ require 'vendor/autoload.php';
 // Include test variables.
 require 'test_data.php';
 
-// Make a new API client object.
-$api = new DCET\ApiClient($test_url);
+// Initialise a Drupal API client.
+$drupal = new DCET\DrupalClient($test_url);
 
 // Log in. This uses Drupal's standard cookie-based authentication.
-$api->login($test_username, $test_password);
+$drupal->login($test_username, $test_password);
 
-// Get information for a ticket.
-print_r($api->getTicket($test_barcode));
+// Print the user ID of the logged in user.
+if ($drupal->isLoggedIn()) {
+  echo "Logged in successfully (user ID: " . $drupal->getUserId() . ")\n";
+}
 
-// Log out.
-$api->logout();
+// Check a ticket's validity.
+echo "Checking ticket barcode '$test_barcode'\n";
+$checker = new DCET\TicketClient($drupal);
+$ticket = $checker->getTicket($test_barcode);
+if ($ticket['valid']) {
+  echo "Valid\n";
+}
+else {
+  echo "Invalid: " . $ticket['reason'] . "\n";
+}

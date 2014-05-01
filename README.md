@@ -10,8 +10,11 @@ Getting started
 Configuring the Drupal site:
 
   1. Enable the Commerce Event Ticket Services module (cet_services).
-  2. In admin/structure/services, create a new REST endpoint, enabling the
-     following resources:
+  2. In admin/structure/services, create a new endpoint. Select REST as the
+     server, and enable 'Session authentication' as the authentication scheme.
+  3. In the endpoint's configuration, under 'Server', enable the 'json' response
+     formatter and the 'application/json' request parser type.
+  4. Under 'Resources', enable the following resources for the endpoint:
        - user: login (API version 1.1), logout (API Version 1.1), token
        - event-ticket: retrieve, validate
 

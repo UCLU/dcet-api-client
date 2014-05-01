@@ -57,7 +57,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
    * necessary for (nearly) all Drupal Services POST requests.
    */
   public function post($path, array $options = array()) {
-    $options['X-CSRF-Token'] = $this->getCsrfToken();
+    $options['headers']['X-CSRF-Token'] = $this->getCsrfToken();
     return $this->http->post($path, $options);
   }
 

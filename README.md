@@ -17,6 +17,8 @@ Configuring the Drupal site:
   4. Under 'Resources', enable the following resources for the endpoint:
        - user: login (API version 1.1), logout (API Version 1.1), token
        - event-ticket: retrieve, validate
+       - event-ticket-nodes: index
+       - node: tickets
 
 See test.php for how to use the client.
 

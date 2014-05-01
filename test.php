@@ -10,7 +10,8 @@ require 'vendor/autoload.php';
 // Include test variables.
 require 'test_data.php';
 
-// Initialise a Drupal Services API client.
+// Initialise a Drupal Services API client, with $test_url as the base URL. An
+// example value of $test_url would be 'https://example.com/api'.
 $drupal = new DCET\DrupalServicesClient($test_url);
 
 // Log in. This uses Drupal's standard cookie-based authentication.
@@ -21,13 +22,24 @@ if ($drupal->isLoggedIn()) {
   echo "Logged in successfully (user ID: " . $drupal->getUserId() . ")\n";
 }
 
-// Check a ticket's validity.
-echo "Checking ticket barcode '$test_barcode'\n";
+// Initialise a Commerce Event Ticket API client, using the Drupal client.
 $checker = new DCET\TicketClient($drupal);
-$ticket = $checker->getTicket($test_barcode);
-if ($ticket['valid']) {
-  echo "Valid\n";
+
+// Get the next ticketed event.
+$events = $checker->getNodes(0, 1);
+if (!count($events)) {
+  echo "No events found\n";
+  exit;
 }
-else {
-  echo "Invalid: " . $ticket['reason'] . "\n";
+$event = reset($events);
+
+// Get a list of tickets for the event.
+echo "Looking up tickets for the next available event, '{$event['title']}' ({$event['start_date']})...\n";
+$tickets = $checker->getNodeTickets($event['nid']);
+$count = count($tickets);
+if ($count) {
+  echo "$count ticket(s) found!\n";
 }
+
+// Log out.
+$drupal->logout();

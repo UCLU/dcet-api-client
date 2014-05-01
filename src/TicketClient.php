@@ -85,6 +85,40 @@ class TicketClient implements ClientInterface {
   }
 
   /**
+   * Get a list of nodes with tickets (AKA events).
+   *
+   * @param int $offset
+   * @param int $limit
+   *
+   * @return array
+   *   An array of nodes, each one being an array containing the keys 'nid',
+   *   'title', and potentially 'start_date' and 'end_date'.
+   */
+  public function getNodes($offset = 0, $limit = 50) {
+    $options = array('query' => array('offset' => $offset, 'limit' => $limit));
+    $response = $this->drupal->get('event-ticket-nodes', $options);
+    if ($response->getStatusCode() == 200) {
+      return $response->json();
+    }
+    throw new ResponseException('Failed to get nodes');
+  }
+
+  /**
+   * Get a list of tickets for a given node.
+   *
+   * @param int $nid
+   *   The node ID.
+   */
+  public function getNodeTickets($nid, $offset = 0, $limit = 50) {
+    $options = array('query' => array('offset' => $offset, 'limit' => $limit));
+    $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
+    if ($response->getStatusCode() == 200) {
+      return $response->json();
+    }
+    throw new ResponseException('Failed to get tickets for node');
+  }
+
+  /**
    * Check whether a barcode is valid (before sending it to the API).
    *
    * @param string $barcode

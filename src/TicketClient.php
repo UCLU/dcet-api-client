@@ -63,15 +63,12 @@ class TicketClient implements ClientInterface {
     if (!$this->drupal->isLoggedIn()) {
       throw new RequestException('Not logged in');
     }
-    $options = [];
-    if ($log) {
-      $options['query']['log'] = $log;
-    }
+    $options = ['body' => ['log' => $log]];
     try {
       $response = $this->drupal->post('event-ticket/' . $barcode . '/validate', $options);
     }
     catch (GuzzleClientException $e) {
-      // Deal with the 400 response status (when tickets are not valid).
+      // Deal with the 400 response status (when the ticket is not valid).
       $response = $e->getResponse();
       if ($response && $response->getStatusCode() == 400) {
         return $response->json();
@@ -82,6 +79,42 @@ class TicketClient implements ClientInterface {
       return $response->json();
     }
     throw new ResponseException('Failed to mark ticket used');
+  }
+
+  /**
+   * Mark multiple tickets as used.
+   *
+   * @param array $tickets
+   *   The tickets to validate (as an array of barcodes).
+   * @param string $log
+   *   A log message to save, if the tickets are marked as used.
+   *
+   * @return array
+   *   An array of validation results keyed by the tickets' barcodes, each
+   *   result being an array containing the keys:
+   *     - 'found' (TRUE or FALSE)
+   *     - 'validated' (TRUE or FALSE)
+   *   and, if the ticket was found yet not validated, a 'reason' (string).
+   */
+  public function markMultipleTicketsUsed(array $tickets, $log = NULL) {
+    if (!$this->drupal->isLoggedIn()) {
+      throw new RequestException('Not logged in');
+    }
+    if (count($tickets) == 0) {
+      throw new RequestException('No tickets specified');
+    }
+    elseif (count($tickets) > 100) {
+      throw new RequestException('Too many tickets');
+    }
+    $options = [
+      'body' => ['tickets' => $tickets, 'log' => $log],
+      'headers' => ['Content-Type' => 'application/json'],
+    ];
+    $response = $this->drupal->post('event-ticket/validate-multiple', $options);
+    if ($response->getStatusCode() == 200) {
+      return $response->json();
+    }
+    throw new ResponseException('Failed to mark tickets used');
   }
 
   /**

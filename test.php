@@ -12,7 +12,7 @@ require 'test_data.php';
 
 // Initialise a Drupal Services API client, with $test_url as the base URL. An
 // example value of $test_url would be 'https://example.com/api'.
-$drupal = new DCET\DrupalServicesClient($test_url);
+$drupal = new DCET\DrupalServicesClient($test_url, isset($test_options) ? $test_options : []);
 
 // Log in. This uses Drupal's standard cookie-based authentication.
 $drupal->login($test_username, $test_password);

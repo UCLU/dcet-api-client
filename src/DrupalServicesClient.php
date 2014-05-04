@@ -24,23 +24,22 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
    * @param string $endpoint_url
    *   The full URL to the (Drupal Services) API endpoint, for example
    *   'https://example.com/api'.
+   * @param array $options
+   *   An array of options to pass to \GuzzleHttp\Client::__construct().
    */
-  public function __construct($endpoint_url) {
-    $guzzle_options = array();
-
-    // Set up the base URL of every request.
-    $guzzle_options['base_url'] = rtrim($endpoint_url, '/') . '/';
-
-    // Disable redirects to avoid confusing responses.
-    $guzzle_options['defaults']['allow_redirects'] = FALSE;
-
-    // Enable cookies for every request, so that we can easily remain logged in.
-    $guzzle_options['defaults']['cookies'] = TRUE;
-
-    // Request JSON responses by default.
-    $guzzle_options['defaults']['headers']['Accept'] = 'application/json';
-
-    $this->http = new GuzzleClient($guzzle_options);
+  public function __construct($endpoint_url, array $options = []) {
+    $options = array_merge_recursive([
+      'base_url' => rtrim($endpoint_url, '/') . '/',
+      'defaults' => [
+        // Disable redirects to avoid confusing responses.
+        'allow_redirects' => FALSE,
+        // Enable cookies for every request.
+        'cookies' => TRUE,
+        // Request JSON responses by default.
+        'headers' => ['Accept' => 'application/json']
+      ],
+    ], $options);
+    $this->http = new GuzzleClient($options);
   }
 
   /**

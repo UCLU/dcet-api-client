@@ -53,7 +53,7 @@ interface DrupalServicesClientInterface extends ClientInterface {
    * @param string $path
    * @param array $options
    */
-  public function get($path, array $options = array());
+  public function get($path, array $options = []);
 
   /**
    * Make a POST request to Drupal.
@@ -61,6 +61,6 @@ interface DrupalServicesClientInterface extends ClientInterface {
    * @param string $path
    * @param array $options
    */
-  public function post($path, array $options = array());
+  public function post($path, array $options = []);
 
 }

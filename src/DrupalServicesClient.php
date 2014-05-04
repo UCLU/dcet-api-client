@@ -46,7 +46,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
   /**
    * @{inheritdoc}
    */
-  public function get($path, array $options = array()) {
+  public function get($path, array $options = []) {
     return $this->http->get($path, $options);
   }
 
@@ -56,7 +56,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
    * This ensures that the correct CSRF token is passed as a header, which is
    * necessary for (nearly) all Drupal Services POST requests.
    */
-  public function post($path, array $options = array()) {
+  public function post($path, array $options = []) {
     $options['headers']['X-CSRF-Token'] = $this->getCsrfToken();
     return $this->http->post($path, $options);
   }
@@ -71,10 +71,10 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     elseif ($this->logged_in) {
       $this->logout();
     }
-    $options = array();
-    $options['body']['username'] = $username;
-    $options['body']['password'] = $password;
-    $options['headers']['Content-Type'] = 'application/json';
+    $options = [
+      'body' => ['username' => $username, 'password' => $password],
+      'headers' => ['Content-Type' => 'application/json'],
+    ];
     $response = $this->http->post('user/login', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = TRUE;
@@ -94,9 +94,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     if (!$this->logged_in) {
       return TRUE;
     }
-    $options = array();
-    $options['headers']['X-CSRF-Token'] = $this->getCsrfToken();
-    $response = $this->http->post('user/logout', $options);
+    $response = $this->post('user/logout');
     if ($response->getStatusCode() == 200) {
       $this->logged_in = FALSE;
       $this->username = NULL;

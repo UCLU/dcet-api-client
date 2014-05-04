@@ -63,7 +63,7 @@ class TicketClient implements ClientInterface {
     if (!$this->drupal->isLoggedIn()) {
       throw new RequestException('Not logged in');
     }
-    $options = array();
+    $options = [];
     if ($log) {
       $options['query']['log'] = $log;
     }
@@ -95,7 +95,7 @@ class TicketClient implements ClientInterface {
    *   'title', and potentially 'start_date' and 'end_date'.
    */
   public function getNodes($offset = 0, $limit = 50) {
-    $options = array('query' => array('offset' => $offset, 'limit' => $limit));
+    $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
     $response = $this->drupal->get('event-ticket-nodes', $options);
     if ($response->getStatusCode() == 200) {
       return $response->json();
@@ -108,9 +108,11 @@ class TicketClient implements ClientInterface {
    *
    * @param int $nid
    *   The node ID.
+   * @param int $offset
+   * @param int $limit
    */
   public function getNodeTickets($nid, $offset = 0, $limit = 50) {
-    $options = array('query' => array('offset' => $offset, 'limit' => $limit));
+    $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
     $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
     if ($response->getStatusCode() == 200) {
       return $response->json();

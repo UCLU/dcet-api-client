@@ -158,13 +158,18 @@ class TicketClient implements ClientInterface {
    *   The node ID.
    * @param int $offset
    * @param int $limit
+   * @param int $changed_since
    *
    * @return array
    *   A list of tickets for the node, each ticket being an array of the same
    *   information the getTicket() method provides.
    */
-  public function getNodeTickets($nid, $offset = 0, $limit = 50) {
-    $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
+  public function getNodeTickets($nid, $offset = 0, $limit = 50, $changed_since = 0) {
+    $options = ['query' => [
+      'offset' => $offset,
+      'limit' => $limit,
+      'changed_since' => $changed_since,
+    ]];
     $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
     return $response->json();
   }

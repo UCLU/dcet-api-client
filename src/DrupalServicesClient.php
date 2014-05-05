@@ -34,8 +34,11 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
         'allow_redirects' => FALSE,
         // Enable cookies for every request.
         'cookies' => TRUE,
-        // Request JSON responses by default.
-        'headers' => ['Accept' => 'application/json']
+        // Use JSON requests and accept JSON responses by default.
+        'headers' => [
+          'Accept' => 'application/json',
+          'Content-Type' => 'application/json',
+        ]
       ],
     ], $options);
     $this->http = new GuzzleClient($options);
@@ -68,10 +71,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     } elseif ($this->logged_in) {
       $this->logout();
     }
-    $options = [
-      'body' => ['username' => $username, 'password' => $password],
-      'headers' => ['Content-Type' => 'application/json'],
-    ];
+    $options = ['body' => ['username' => $username, 'password' => $password]];
     $response = $this->http->post('user/login', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = TRUE;

@@ -129,7 +129,6 @@ class TicketClient implements ClientInterface {
     }
     $options = [
       'body' => ['tickets' => $tickets, 'log' => $log],
-      'headers' => ['Content-Type' => 'application/json'],
     ];
     $response = $this->drupal->post('event-ticket/validate-multiple', $options);
     return $response->json();

@@ -7,8 +7,7 @@
 namespace DCET;
 
 use DCET\Exception\RequestException;
-use DCET\Exception\ResponseException;
-use GuzzleHttp\Exception\ClientException as GuzzleClientException;
+use GuzzleHttp\Exception\ClientException;
 
 class TicketClient implements ClientInterface {
 
@@ -75,7 +74,7 @@ class TicketClient implements ClientInterface {
    *   default: 'Validated via API client'.
    *
    * @throws RequestException
-   * @throws ResponseException
+   * @throws ClientException
    *
    * @return array
    *   An array containing the keys 'validated' (bool) and, if the ticket was
@@ -92,7 +91,7 @@ class TicketClient implements ClientInterface {
     try {
       $response = $this->drupal->post('event-ticket/' . $barcode . '/validate', $options);
     }
-    catch (GuzzleClientException $e) {
+    catch (ClientException $e) {
       // Deal with the 'Ticket not validated' error.
       if ($e->getResponse() && $e->getResponse()->getStatusCode() == 400) {
         return $e->getResponse()->json();
@@ -126,7 +125,8 @@ class TicketClient implements ClientInterface {
     }
     if (count($tickets) == 0) {
       throw new RequestException('No tickets specified');
-    } elseif (count($tickets) > 100) {
+    }
+    elseif (count($tickets) > 100) {
       throw new RequestException('Too many tickets');
     }
     $options = ['body' => ['tickets' => $tickets, 'log' => $log]];
@@ -170,11 +170,13 @@ class TicketClient implements ClientInterface {
    *   information the getTicket() method provides.
    */
   public function getNodeTickets($nid, $offset = 0, $limit = 50, $changed_since = 0) {
-    $options = ['query' => [
-      'offset' => $offset,
-      'limit' => $limit,
-      'changed_since' => $changed_since,
-    ]];
+    $options = [
+      'query' => [
+        'offset' => $offset,
+        'limit' => $limit,
+        'changed_since' => $changed_since,
+      ]
+    ];
     $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
     return $response->json();
   }

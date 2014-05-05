@@ -68,7 +68,8 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
   public function login($username, $password) {
     if ($this->logged_in && $this->username === $username) {
       return TRUE;
-    } elseif ($this->logged_in) {
+    }
+    elseif ($this->logged_in) {
       $this->logout();
     }
     $options = ['body' => ['username' => $username, 'password' => $password]];
@@ -119,7 +120,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
   /**
    * @{inheritdoc}
    */
-  public function getUserId() {
+  public function getUid() {
     return $this->uid;
   }
 

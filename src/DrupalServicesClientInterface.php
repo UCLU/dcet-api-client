@@ -43,12 +43,12 @@ interface DrupalServicesClientInterface extends ClientInterface {
   public function getUsername();
 
   /**
-   * Get the currently logged in user ID.
+   * Get the currently logged in user ID (UID).
    *
    * @return int
-   *   The Drupal user ID (AKA 'uid'). If anonymous (not logged in), this is 0.
+   *   The Drupal user ID (UID). If anonymous (not logged in), this is 0.
    */
-  public function getUserId();
+  public function getUid();
 
   /**
    * Make a GET request to Drupal.

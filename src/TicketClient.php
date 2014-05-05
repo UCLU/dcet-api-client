@@ -71,7 +71,8 @@ class TicketClient implements ClientInterface {
    * @param string $barcode
    *   The ticket's barcode.
    * @param string $log
-   *   A log message to save, if the ticket is marked as used.
+   *   A log message to save, if the ticket is marked as used. Optional,
+   *   default: 'Validated via API client'.
    *
    * @throws RequestException
    * @throws ResponseException
@@ -80,7 +81,7 @@ class TicketClient implements ClientInterface {
    *   An array containing the keys 'validated' (bool) and, if the ticket was
    *   not validated, a 'reason' (string).
    */
-  public function markTicketUsed($barcode, $log = NULL) {
+  public function markTicketUsed($barcode, $log = 'Validated via API client') {
     if (!$this->isBarcodeValid($barcode)) {
       throw new RequestException('Invalid barcode');
     }
@@ -107,7 +108,8 @@ class TicketClient implements ClientInterface {
    * @param array $tickets
    *   The tickets to validate (as an array of barcodes).
    * @param string $log
-   *   A log message to save, if the tickets are marked as used.
+   *   The log message to save, if the tickets are marked as used. Optional,
+   *   default: 'Validated via API client'.
    *
    * @throws RequestException
    *
@@ -118,7 +120,7 @@ class TicketClient implements ClientInterface {
    *     - 'validated' (bool)
    *   and, if the ticket was found yet not validated, a 'reason' (string).
    */
-  public function markMultipleTicketsUsed(array $tickets, $log = NULL) {
+  public function markMultipleTicketsUsed(array $tickets, $log = 'Validated via API client') {
     if (!$this->drupal->isLoggedIn()) {
       throw new RequestException('Not logged in');
     }

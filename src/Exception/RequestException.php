@@ -7,4 +7,5 @@
 namespace DCET\Exception;
 
 class RequestException extends \Exception {
+
 }

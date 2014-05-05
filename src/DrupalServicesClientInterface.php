@@ -11,6 +11,9 @@ interface DrupalServicesClientInterface extends ClientInterface {
   /**
    * Log in to Drupal.
    *
+   * @param string $username
+   * @param string $password
+   *
    * @return bool
    */
   public function login($username, $password);

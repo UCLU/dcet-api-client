@@ -6,7 +6,6 @@
 
 namespace DCET;
 
-use DCET\Exception\RequestException;
 use DCET\Exception\ResponseException;
 use GuzzleHttp\Client as GuzzleClient;
 
@@ -66,8 +65,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
   public function login($username, $password) {
     if ($this->logged_in && $this->username === $username) {
       return TRUE;
-    }
-    elseif ($this->logged_in) {
+    } elseif ($this->logged_in) {
       $this->logout();
     }
     $options = [
@@ -135,11 +133,8 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
       return $this->csrf_token;
     }
     $response = $this->http->post('user/token');
-    if ($response->getStatusCode() == 200) {
-      $data = $response->json();
-      return $data['token'];
-    }
-    throw new ResponseException('Failed to get CSRF token');
+    $data = $response->json();
+    return $data['token'];
   }
 
 }

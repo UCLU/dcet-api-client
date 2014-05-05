@@ -40,6 +40,3 @@ $count = count($tickets);
 if ($count) {
   echo "$count ticket(s) found!\n";
 }
-
-// Log out.
-$drupal->logout();

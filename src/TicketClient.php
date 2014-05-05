@@ -27,8 +27,21 @@ class TicketClient implements ClientInterface {
    * @param string $barcode
    *   A ticket barcode.
    *
+   * @throws RequestException
+   *
    * @return array
-   *   An array of ticket information. This throws an ApiClientException on failure.
+   *   An array of ticket information, containing at least these keys:
+   *     - 'ticket_id' (int) The unique ID of the ticket.
+   *     - 'barcode_token' (string) The ticket's barcode.
+   *     - 'valid' (bool) Whether the ticket is valid at this time.
+   *     - 'reason' (string) Why the ticket is invalid (if 'valid' is FALSE).
+   *     - 'used' (bool) Whether the ticket has been used before.
+   *     - 'position' (string) The ticket's position within the customer's
+   *        ticket orders for this product, e.g. '1 of 2', or '2 of 2', etc.
+   *     - 'created' (string) The date the ticket was created (ISO 8601).
+   *     - 'changed' (string) The date the ticket was last changed (ISO 8601).
+   *   and potentially further information, depending on the privileges of the
+   *   logged in user.
    */
   public function getTicket($barcode) {
     if (!$this->isBarcodeValid($barcode)) {
@@ -38,10 +51,18 @@ class TicketClient implements ClientInterface {
       throw new RequestException('Not logged in');
     }
     $response = $this->drupal->get('event-ticket/' . $barcode);
-    if ($response->getStatusCode() == 200) {
-      return $response->json();
-    }
-    throw new ResponseException('Failed to get ticket information');
+    return $response->json();
+  }
+
+  /**
+   * Check whether a barcode is valid (before sending it to the API).
+   *
+   * @param string $barcode
+   *
+   * @return bool
+   */
+  protected function isBarcodeValid($barcode) {
+    return preg_match('/^[A-Z0-9]{6,12}$/i', $barcode);
   }
 
   /**
@@ -52,9 +73,12 @@ class TicketClient implements ClientInterface {
    * @param string $log
    *   A log message to save, if the ticket is marked as used.
    *
+   * @throws RequestException
+   * @throws ResponseException
+   *
    * @return array
-   *   An array containing the keys 'validated' (TRUE or FALSE) and, if the
-   *   ticket was not validated, a 'reason' (string).
+   *   An array containing the keys 'validated' (bool) and, if the ticket was
+   *   not validated, a 'reason' (string).
    */
   public function markTicketUsed($barcode, $log = NULL) {
     if (!$this->isBarcodeValid($barcode)) {
@@ -68,17 +92,13 @@ class TicketClient implements ClientInterface {
       $response = $this->drupal->post('event-ticket/' . $barcode . '/validate', $options);
     }
     catch (GuzzleClientException $e) {
-      // Deal with the 400 response status (when the ticket is not valid).
-      $response = $e->getResponse();
-      if ($response && $response->getStatusCode() == 400) {
-        return $response->json();
+      // Deal with the 'Ticket not validated' error.
+      if ($e->getResponse() && $e->getResponse()->getStatusCode() == 400) {
+        return $e->getResponse()->json();
       }
       throw $e;
     }
-    if ($response->getStatusCode() == 200) {
-      return $response->json();
-    }
-    throw new ResponseException('Failed to mark ticket used');
+    return $response->json();
   }
 
   /**
@@ -89,11 +109,13 @@ class TicketClient implements ClientInterface {
    * @param string $log
    *   A log message to save, if the tickets are marked as used.
    *
+   * @throws RequestException
+   *
    * @return array
    *   An array of validation results keyed by the tickets' barcodes, each
    *   result being an array containing the keys:
-   *     - 'found' (TRUE or FALSE)
-   *     - 'validated' (TRUE or FALSE)
+   *     - 'found' (bool)
+   *     - 'validated' (bool)
    *   and, if the ticket was found yet not validated, a 'reason' (string).
    */
   public function markMultipleTicketsUsed(array $tickets, $log = NULL) {
@@ -102,8 +124,7 @@ class TicketClient implements ClientInterface {
     }
     if (count($tickets) == 0) {
       throw new RequestException('No tickets specified');
-    }
-    elseif (count($tickets) > 100) {
+    } elseif (count($tickets) > 100) {
       throw new RequestException('Too many tickets');
     }
     $options = [
@@ -111,10 +132,7 @@ class TicketClient implements ClientInterface {
       'headers' => ['Content-Type' => 'application/json'],
     ];
     $response = $this->drupal->post('event-ticket/validate-multiple', $options);
-    if ($response->getStatusCode() == 200) {
-      return $response->json();
-    }
-    throw new ResponseException('Failed to mark tickets used');
+    return $response->json();
   }
 
   /**
@@ -130,10 +148,7 @@ class TicketClient implements ClientInterface {
   public function getNodes($offset = 0, $limit = 50) {
     $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
     $response = $this->drupal->get('event-ticket-nodes', $options);
-    if ($response->getStatusCode() == 200) {
-      return $response->json();
-    }
-    throw new ResponseException('Failed to get nodes');
+    return $response->json();
   }
 
   /**
@@ -143,26 +158,15 @@ class TicketClient implements ClientInterface {
    *   The node ID.
    * @param int $offset
    * @param int $limit
+   *
+   * @return array
+   *   A list of tickets for the node, each ticket being an array of the same
+   *   information the getTicket() method provides.
    */
   public function getNodeTickets($nid, $offset = 0, $limit = 50) {
     $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
     $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
-    if ($response->getStatusCode() == 200) {
-      return $response->json();
-    }
-    throw new ResponseException('Failed to get tickets for node');
-  }
-
-  /**
-   * Check whether a barcode is valid (before sending it to the API).
-   *
-   * @param string $barcode
-   *
-   * @return bool
-   */
-  protected function isBarcodeValid($barcode) {
-    $length = strlen($barcode);
-    return $length >= 5 && $length <= 30;
+    return $response->json();
   }
 
 }

@@ -127,9 +127,7 @@ class TicketClient implements ClientInterface {
     } elseif (count($tickets) > 100) {
       throw new RequestException('Too many tickets');
     }
-    $options = [
-      'body' => ['tickets' => $tickets, 'log' => $log],
-    ];
+    $options = ['body' => ['tickets' => $tickets, 'log' => $log]];
     $response = $this->drupal->post('event-ticket/validate-multiple', $options);
     return $response->json();
   }
@@ -138,7 +136,9 @@ class TicketClient implements ClientInterface {
    * Get a list of nodes with tickets (AKA events).
    *
    * @param int $offset
+   *   The offset from 0 for the nodes to retrieve. Optional, default: 0.
    * @param int $limit
+   *   The limit for the number of nodes to retrieve. Optional, default: 50.
    *
    * @return array
    *   An array of nodes, each one being an array containing the keys 'nid',
@@ -156,8 +156,12 @@ class TicketClient implements ClientInterface {
    * @param int $nid
    *   The node ID.
    * @param int $offset
+   *   The offset from 0 for the tickets to retrieve. Optional, default: 0.
    * @param int $limit
+   *   The limit for the number of tickets to retrieve. Optional, default: 50.
    * @param int $changed_since
+   *   A UNIX timestamp. Tickets will only be retrieved if they were modified
+   *   after this timestamp. Optional, default: 0 (no restriction).
    *
    * @return array
    *   A list of tickets for the node, each ticket being an array of the same

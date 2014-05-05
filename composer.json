@@ -1,7 +1,6 @@
 {
   "name": "DCET API Client",
   "description": "An API client for the Drupal Commerce Event Ticket module.",
-  "php": ">=5.4",
   "authors": [
     {
       "name": "Patrick Dawkins",
@@ -9,6 +8,7 @@
     }
   ],
   "require": {
+    "php": ">=5.4",
     "guzzlehttp/guzzle": "4.*"
   },
   "autoload": {

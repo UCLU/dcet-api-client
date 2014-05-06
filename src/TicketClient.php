@@ -90,8 +90,15 @@ class TicketClient implements TicketClientInterface {
   /**
    * @{inheritdoc}
    */
-  public function getNodes($offset = 0, $limit = 50) {
-    $options = ['query' => ['offset' => $offset, 'limit' => $limit]];
+  public function getNodes($offset = 0, $limit = 50, $date_filter = TRUE, $date_sort = TRUE) {
+    $options = [
+      'query' => [
+        'offset' => $offset,
+        'limit' => $limit,
+        'date_filter' => $date_filter ? 1 : 0,
+        'date_sort' => $date_filter ? 1 : 0,
+      ],
+    ];
     $response = $this->drupal->get('event-ticket-nodes', $options);
     return $response->json();
   }
@@ -105,7 +112,7 @@ class TicketClient implements TicketClientInterface {
         'offset' => $offset,
         'limit' => $limit,
         'changed_since' => $changed_since,
-      ]
+      ],
     ];
     $response = $this->drupal->get('node/' . $nid . '/tickets', $options);
     return $response->json();

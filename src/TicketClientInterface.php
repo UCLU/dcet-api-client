@@ -80,12 +80,18 @@ interface TicketClientInterface {
    *   The offset from 0 for the nodes to retrieve. Optional, default: 0.
    * @param int $limit
    *   The limit for the number of nodes to retrieve. Optional, default: 50.
+   * @param bool $date_filter
+   *   Whether to filter nodes by the event dates, if this is possible on the
+   *   server side. If enabled, only nodes with a start date equal to or later
+   *   than today will be returned. Defaults to TRUE.
+   * @param bool $date_sort
+   *   Whether to sort nodes by the event dates, if possible.
    *
    * @return array
    *   An array of nodes, each one being an array containing the keys 'nid',
    *   'title', and potentially 'start_date' and 'end_date'.
    */
-  public function getNodes($offset = 0, $limit = 50);
+  public function getNodes($offset = 0, $limit = 50, $date_filter = TRUE, $date_sort = TRUE);
 
   /**
    * Get a list of tickets for a given node.
@@ -97,8 +103,9 @@ interface TicketClientInterface {
    * @param int $limit
    *   The limit for the number of tickets to retrieve. Optional, default: 50.
    * @param int $changed_since
-   *   A UNIX timestamp. Tickets will only be retrieved if they were modified
-   *   after this timestamp. Optional, default: 0 (no restriction).
+   *   A UNIX timestamp. Tickets will only be retrieved if they were modified or
+   *   created after this timestamp (so you can use this to check for updates
+   *   regularly). Optional, default: 0 (no restriction).
    *
    * @return array
    *   A list of tickets for the node, each ticket being an array of the same

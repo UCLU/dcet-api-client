@@ -15,7 +15,7 @@ Configuring the Drupal site:
   3. In the endpoint's configuration, under 'Server', enable the 'json' response
      formatter and the 'application/json' request parser type.
   4. Under 'Resources', enable the following resources for the endpoint:
-       - user: login (API version 1.1), logout (API Version 1.1), token
+       - user: login, logout, token
        - event-ticket: retrieve, validate
        - event-ticket-nodes: index
        - node: tickets

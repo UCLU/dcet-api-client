@@ -72,7 +72,9 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     elseif ($this->logged_in) {
       $this->logout();
     }
-    $options = ['body' => ['name' => $username, 'pass' => $password]];
+    $options = ['body' => ['username' => $username, 'password' => $password]];
+    // Force version 1.0 for the user/login service.
+    $options['headers']['services_user_login_version'] = '1.0';
     $response = $this->http->post('user/login', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = TRUE;
@@ -93,6 +95,9 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
       return TRUE;
     }
     $response = $this->post('user/logout');
+    // Force version 1.0 for the user/logout service. Without this header,
+    // versioning does not appear to work properly in all cases.
+    $options['headers']['services_user_logout_version'] = '1.0';
     if ($response->getStatusCode() == 200) {
       $this->logged_in = FALSE;
       $this->username = NULL;

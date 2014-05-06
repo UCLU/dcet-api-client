@@ -6,7 +6,10 @@
 
 namespace DCET;
 
-interface DrupalServicesClientInterface extends ClientInterface {
+use DCET\Exception\ResponseException;
+use GuzzleHttp\Message\ResponseInterface;
+
+interface DrupalServicesClientInterface {
 
   /**
    * Log in to Drupal.
@@ -15,6 +18,7 @@ interface DrupalServicesClientInterface extends ClientInterface {
    * @param string $password
    *
    * @return bool
+   * @throws ResponseException
    */
   public function login($username, $password);
 
@@ -22,6 +26,7 @@ interface DrupalServicesClientInterface extends ClientInterface {
    * Log out of Drupal.
    *
    * @return bool
+   * @throws ResponseException
    */
   public function logout();
 
@@ -55,6 +60,8 @@ interface DrupalServicesClientInterface extends ClientInterface {
    *
    * @param string $path
    * @param array $options
+   *
+   * @return ResponseInterface
    */
   public function get($path, array $options = []);
 
@@ -63,6 +70,8 @@ interface DrupalServicesClientInterface extends ClientInterface {
    *
    * @param string $path
    * @param array $options
+   *
+   * @return ResponseInterface
    */
   public function post($path, array $options = []);
 

@@ -7,7 +7,7 @@
 namespace DCET;
 
 use DCET\Exception\ResponseException;
-use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp;
 
 class DrupalServicesClient implements DrupalServicesClientInterface {
 
@@ -24,7 +24,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
    *   The full URL to the (Drupal Services) API endpoint, for example
    *   'https://example.com/api'.
    * @param array $options
-   *   An array of options to pass to \GuzzleHttp\Client::__construct().
+   *   An array of options to pass to GuzzleHttp\Client::__construct().
    */
   public function __construct($endpoint_url, array $options = []) {
     $options = array_merge_recursive([
@@ -41,11 +41,13 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
         ]
       ],
     ], $options);
-    $this->http = new GuzzleClient($options);
+    $this->http = new GuzzleHttp\Client($options);
   }
 
   /**
    * @{inheritdoc}
+   *
+   * @see GuzzleHttp\ClientInterface::get()
    */
   public function get($path, array $options = []) {
     return $this->http->get($path, $options);
@@ -55,7 +57,10 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
    * @{inheritdoc}
    *
    * This ensures that the correct CSRF token is passed as a header, which is
-   * necessary for (nearly) all Drupal Services POST requests.
+   * necessary for all Drupal Services POST requests that use session
+   * authentication.
+   *
+   * @see GuzzleHttp\ClientInterface::post()
    */
   public function post($path, array $options = []) {
     $options['headers']['X-CSRF-Token'] = $this->getCsrfToken();
@@ -73,8 +78,11 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
       $this->logout();
     }
     $options = ['body' => ['username' => $username, 'password' => $password]];
-    // Force version 1.0 for the user/login service.
+    // Force version 1.0 for the user/login service. Without this header,
+    // versioning does not appear to work properly in all cases.
     $options['headers']['services_user_login_version'] = '1.0';
+    // Bypass $this->post(), because we do not want the CSRF token to be added
+    // to this request.
     $response = $this->http->post('user/login', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = TRUE;
@@ -94,10 +102,10 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     if (!$this->logged_in) {
       return TRUE;
     }
-    $response = $this->post('user/logout');
     // Force version 1.0 for the user/logout service. Without this header,
     // versioning does not appear to work properly in all cases.
-    $options['headers']['services_user_logout_version'] = '1.0';
+    $options = ['headers' => ['services_user_logout_version' => '1.0']];
+    $response = $this->post('user/logout', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = FALSE;
       $this->username = NULL;
@@ -138,6 +146,8 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     if ($this->csrf_token !== NULL) {
       return $this->csrf_token;
     }
+    // Bypass $this->post(), because we do not want the CSRF token to be added
+    // to this request.
     $response = $this->http->post('user/token');
     $data = $response->json();
     return $data['token'];

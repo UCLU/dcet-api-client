@@ -72,7 +72,7 @@ class DrupalServicesClient implements DrupalServicesClientInterface {
     elseif ($this->logged_in) {
       $this->logout();
     }
-    $options = ['body' => ['username' => $username, 'password' => $password]];
+    $options = ['body' => ['name' => $username, 'pass' => $password]];
     $response = $this->http->post('user/login', $options);
     if ($response->getStatusCode() == 200) {
       $this->logged_in = TRUE;

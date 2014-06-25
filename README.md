@@ -1,9 +1,7 @@
 API Client Library for Drupal Commerce Event Ticket
 ===================================================
-Under construction.
-
-This will be an API client library for Drupal's Commerce Event Ticket module:
-  https://drupal.org/project/commerce_event_ticket
+This is a PHP client library for Drupal's [Commerce Event Ticket](https://drupal.org/project/commerce_event_ticket)
+module.
 
 Getting started
 ---------------
@@ -20,6 +18,18 @@ Configuring the Drupal site:
        - event-ticket-nodes: index
        - node: tickets
 
-See test.php for how to use the client.
+Then see `test.php` for how to use the client.
 
-More to follow...
+Note that you will need to add a file called `test_data.php` to use test.php
+as it is. The file should look like this:
+
+```php
+<?php
+
+// Endpoint URL.
+$test_url = 'https://example.com/api';
+
+// The credentials.
+$test_username = 'username';
+$test_password = 'password';
+```

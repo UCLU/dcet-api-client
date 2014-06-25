@@ -90,6 +90,21 @@ class TicketClient implements TicketClientInterface {
   /**
    * @{inheritdoc}
    */
+  public function resetTicket($barcode, $log = 'Reset via API client') {
+    if (!$this->isBarcodeValid($barcode)) {
+      throw new RequestException('Invalid barcode');
+    }
+    if (!$this->drupal->isLoggedIn()) {
+      throw new RequestException('Not logged in');
+    }
+    $options = ['body' => ['log' => $log]];
+    $response = $this->drupal->post('event-ticket/' . $barcode . '/reset', $options);
+    return $response->json();
+  }
+
+  /**
+   * @{inheritdoc}
+   */
   public function getNodes($offset = 0, $limit = 50, $date_filter = TRUE, $date_sort = TRUE) {
     $options = [
       'query' => [

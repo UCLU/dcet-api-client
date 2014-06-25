@@ -74,6 +74,22 @@ interface TicketClientInterface {
   public function markMultipleTicketsUsed(array $tickets, $log = 'Validated via API client');
 
   /**
+   * Reset a ticket (mark it as unused).
+   *
+   * @param string $barcode
+   *   The ticket's barcode.
+   * @param string $log
+   *   A log message to save, if the ticket is reset. Optional, default: 'Reset
+   *   via API client'.
+   *
+   * @throws RequestException
+   *
+   * @return array
+   *   An array containing the keys 'reset' (bool) and 'used' (bool).
+   */
+  public function resetTicket($barcode, $log = 'Reset via API client');
+
+  /**
    * Get a list of nodes with tickets (AKA events).
    *
    * @param int $offset

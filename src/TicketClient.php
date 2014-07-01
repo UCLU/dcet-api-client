@@ -111,7 +111,7 @@ class TicketClient implements TicketClientInterface {
         'offset' => $offset,
         'limit' => $limit,
         'date_filter' => $date_filter ? 1 : 0,
-        'date_sort' => $date_filter ? 1 : 0,
+        'date_sort' => $date_sort ? 1 : 0,
       ],
     ];
     $response = $this->drupal->get('event-ticket-nodes', $options);

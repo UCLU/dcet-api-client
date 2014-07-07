@@ -11,7 +11,8 @@ Configuring the Drupal site:
   2. In admin/structure/services, create a new endpoint. Select REST as the
      server, and enable 'Session authentication' as the authentication scheme.
   3. In the endpoint's configuration, under 'Server', enable the 'json' response
-     formatter and the 'application/json' request parser type.
+     formatter and both the 'application/json' and
+     'application/x-www-form-urlencoded' request parser types.
   4. Under 'Resources', enable the following resources for the endpoint:
        - user: login, logout, token
        - event-ticket: retrieve, validate
